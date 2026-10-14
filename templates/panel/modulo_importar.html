@@ -1,0 +1,26 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Nuevo módulo{% endblock %}
+{% block content %}
+<h1 class="h3 mb-1">Activar un nuevo módulo</h1>
+<p class="text-secondary">Sube los dos archivos Excel. Antes de activar verás una vista previa.
+  {% if modulo %}El módulo actual (<strong>{{ modulo.nombre }}</strong>) dejará de estar activo, pero sus datos se conservan.{% endif %}</p>
+
+{% if errores %}
+<div class="alert alert-danger"><strong>Corrige estos errores y vuelve a subir los archivos:</strong>
+  <ul class="mb-0 mt-2">{% for e in errores %}<li>{{ e }}</li>{% endfor %}</ul></div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" class="panel p-4">{% csrf_token %}
+  <div class="mb-3"><label class="form-label fw-semibold" for="nombre">Nombre del módulo</label>
+    <input id="nombre" name="nombre" class="form-control" value="{{ nombre|default:'' }}" placeholder="Ej.: Módulo 2 · Base de datos" required></div>
+  <div class="row g-3 mb-4">
+    <div class="col-md-6"><label class="form-label fw-semibold" for="estudiantes">Excel de estudiantes</label>
+      <input id="estudiantes" type="file" name="estudiantes" accept=".xlsx" class="form-control" required>
+      <div class="form-text">Columnas: Número de registro · Nombre completo · Correo electrónico</div></div>
+    <div class="col-md-6"><label class="form-label fw-semibold" for="fechas">Excel de fechas</label>
+      <input id="fechas" type="file" name="fechas" accept=".xlsx" class="form-control" required>
+      <div class="form-text">Columnas: Fecha (dd/mm/aaaa) · Hora inicio · Hora fin</div></div>
+  </div>
+  <button class="btn btn-primary">Validar y ver vista previa</button>
+</form>
+{% endblock %}

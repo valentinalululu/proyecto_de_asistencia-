@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Ingresar · Control de asistencia{% endblock %}
+{% block content %}
+<div class="row justify-content-center pt-4">
+  <div class="col-md-6 col-lg-5">
+    <h1 class="h2 mb-1">Marca tu asistencia</h1>
+    <p class="text-secondary mb-4">{% if modulo %}Módulo activo: <strong>{{ modulo.nombre }}</strong>{% else %}Aún no hay un módulo activo.{% endif %}</p>
+    <form method="post" class="panel p-4">
+      {% csrf_token %}
+      <label for="identificador" class="form-label fw-semibold">Correo o número de registro</label>
+      <input id="identificador" name="identificador" class="form-control form-control-lg mb-3" autofocus required
+             placeholder="juan@gmail.com o 1001" autocomplete="username">
+      <button class="btn btn-primary btn-lg w-100">Ingresar</button>
+    </form>
+    <p class="text-center mt-4 small"><a href="{% url 'login_admin' %}" class="text-secondary">Acceso para administradores</a></p>
+  </div>
+</div>
+{% endblock %}

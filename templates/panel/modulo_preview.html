@@ -1,0 +1,26 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Vista previa{% endblock %}
+{% block content %}
+<h1 class="h3 mb-1">Vista previa · {{ nombre }}</h1>
+<p class="text-secondary">Los archivos son válidos: {{ estudiantes|length }} estudiantes y {{ fechas|length }} fechas de clase. Todavía no se guardó nada.</p>
+
+<div class="row g-4">
+  <div class="col-lg-7"><h2 class="h6">Estudiantes</h2>
+    <div class="panel table-responsive" style="max-height:340px;overflow:auto"><table class="table table-sm mb-0">
+      <thead><tr><th>Registro</th><th>Nombre</th><th>Correo</th></tr></thead>
+      <tbody>{% for e in estudiantes %}<tr><td>{{ e.nro_registro }}</td><td>{{ e.nombre }}</td><td>{{ e.correo }}</td></tr>{% endfor %}</tbody>
+    </table></div></div>
+  <div class="col-lg-5"><h2 class="h6">Fechas de clase</h2>
+    <div class="panel table-responsive" style="max-height:340px;overflow:auto"><table class="table table-sm mb-0">
+      <thead><tr><th>Fecha</th><th>Inicio</th><th>Fin</th></tr></thead>
+      <tbody>{% for f in fechas %}<tr><td>{{ f.fecha }}</td><td>{{ f.inicio }}</td><td>{{ f.fin }}</td></tr>{% endfor %}</tbody>
+    </table></div></div>
+</div>
+
+<form method="post" action="{% url 'modulo_confirmar' %}" class="mt-4 d-flex gap-2"
+      onsubmit="return confirm('Se activará un módulo nuevo sin registros de asistencia. El módulo actual se conserva en la base de datos pero dejará de estar activo. ¿Continuar?');">
+  {% csrf_token %}
+  <button class="btn btn-primary">Activar módulo</button>
+  <a class="btn btn-outline-secondary" href="{% url 'modulo_importar' %}">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Estudiantes{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Estudiantes <span class="text-secondary fs-6">· {{ modulo.nombre }} · {{ page.paginator.count }}</span></h1>
+<form class="row g-2 mb-3" method="get">
+  <div class="col-sm-8 col-md-6"><input class="form-control" name="q" value="{{ q }}" placeholder="Buscar por nombre o número de registro"></div>
+  <div class="col-auto"><button class="btn btn-primary">Buscar</button>{% if q %} <a class="btn btn-link" href="{% url 'estudiantes' %}">Limpiar</a>{% endif %}</div>
+</form>
+<div class="panel table-responsive"><table class="table mb-0">
+  <thead><tr><th>Registro</th><th>Nombre</th><th>Correo</th></tr></thead>
+  <tbody>{% for e in page %}
+    <tr><td>{{ e.nro_registro }}</td><td>{{ e.nombre }}</td><td>{{ e.correo }}</td></tr>
+  {% empty %}<tr><td colspan="3" class="text-center text-secondary py-4">Ningún estudiante coincide con la búsqueda.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% include "_paginacion.html" %}
+{% endblock %}

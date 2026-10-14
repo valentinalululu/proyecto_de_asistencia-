@@ -1,0 +1,29 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Resumen{% endblock %}
+{% block content %}
+{% if not modulo %}
+  <div class="panel p-5 text-center">
+    <h1 class="h3">Todavía no hay un módulo activo</h1>
+    <p class="text-secondary">Sube el Excel de estudiantes y el de fechas para empezar.</p>
+    <a class="btn btn-primary" href="{% url 'modulo_importar' %}">Importar estudiantes y fechas</a>
+  </div>
+{% else %}
+  <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-2">
+    <div><p class="text-secondary mb-0">Módulo activo</p><h1 class="h2 mb-0">{{ modulo.nombre }}</h1></div>
+    <a class="btn btn-outline-primary" href="{% url 'exportar' %}"><i class="bi bi-file-earmark-excel me-1"></i>Exportar asistencias a Excel</a>
+  </div>
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3"><div class="panel p-3"><div class="stat">{{ total_estudiantes }}</div><div class="text-secondary">Estudiantes</div></div></div>
+    <div class="col-6 col-md-3"><div class="panel p-3"><div class="stat">{{ total_fechas }}</div><div class="text-secondary">Fechas de clase</div></div></div>
+    <div class="col-6 col-md-3"><div class="panel p-3"><div class="stat">{% if clase_hoy %}{{ presentes_hoy }}/{{ total_estudiantes }}{% else %}—{% endif %}</div><div class="text-secondary">Presentes hoy</div></div></div>
+    <div class="col-6 col-md-3"><div class="panel p-3"><div class="stat" style="font-size:1.4rem">{% if proxima %}{{ proxima.fecha|date:"d/m/Y" }}{% else %}—{% endif %}</div><div class="text-secondary">Próxima clase</div></div></div>
+  </div>
+  <h2 class="h5 mb-3">Últimas actividades</h2>
+  <div class="panel table-responsive"><table class="table mb-0">
+    <thead><tr><th>Cuándo</th><th>Usuario</th><th>Acción</th><th>Registro</th></tr></thead>
+    <tbody>{% for a in ultimas %}
+      <tr><td class="text-nowrap">{{ a.fecha_hora|date:"d/m H:i" }}</td><td>{{ a.usuario }}</td><td>{{ a.accion }}</td><td>{{ a.registro_afectado }}</td></tr>
+    {% empty %}<tr><td colspan="4" class="text-center text-secondary py-4">Aún no hay actividad.</td></tr>{% endfor %}</tbody>
+  </table></div>
+{% endif %}
+{% endblock %}

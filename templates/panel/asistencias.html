@@ -1,0 +1,39 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Asistencias{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Asistencias <span class="text-secondary fs-6">· {{ modulo.nombre }}</span></h1>
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-5"><input class="form-control" name="q" value="{{ q }}" placeholder="Estudiante: nombre o número de registro"></div>
+  <div class="col-md-4"><select class="form-select" name="fecha">
+    <option value="">Todas las fechas</option>
+    {% for f in fechas %}<option value="{{ f.id }}" {% if fecha_id == f.id|stringformat:"s" %}selected{% endif %}>{{ f.fecha|date:"D d/m/Y" }}</option>{% endfor %}
+  </select></div>
+  <div class="col-auto"><button class="btn btn-primary">Filtrar</button> <a class="btn btn-link" href="{% url 'asistencias' %}">Limpiar</a></div>
+</form>
+<div class="row g-3 mb-3">
+  <div class="col-4"><div class="panel p-3"><div class="stat text-success">{{ totales.presentes }}</div><div class="text-secondary">Presentes</div></div></div>
+  <div class="col-4"><div class="panel p-3"><div class="stat" style="color:var(--bad)">{{ totales.faltas }}</div><div class="text-secondary">Ausentes</div></div></div>
+  <div class="col-4"><div class="panel p-3"><div class="stat" style="color:var(--warn)">{{ totales.pendientes }}</div><div class="text-secondary">Pendientes</div></div></div>
+</div>
+<div class="panel table-responsive"><table class="table mb-0 align-middle">
+  <thead><tr><th>Fecha</th><th>Estudiante</th><th>Estado</th><th>Hora marca</th><th class="text-end">Corregir</th></tr></thead>
+  <tbody>{% for f in page %}
+    <tr>
+      <td class="text-nowrap">{{ f.fecha.fecha|date:"d/m/Y" }}</td>
+      <td>{{ f.estudiante.nombre }} <span class="text-secondary small">{{ f.estudiante.nro_registro }}</span></td>
+      <td>{% include "_estado.html" with estado=f.estado %}{% if f.corregido %} <i class="bi bi-pencil-square text-secondary" title="Modificado por el administrador"></i>{% endif %}</td>
+      <td>{% if f.hora_marca %}{{ f.hora_marca|time:"H:i:s" }}{% else %}—{% endif %}</td>
+      <td class="text-end">
+        <form method="post" action="{% url 'modificar' %}" class="d-inline">{% csrf_token %}
+          <input type="hidden" name="estudiante" value="{{ f.estudiante.id }}">
+          <input type="hidden" name="fecha" value="{{ f.fecha.id }}">
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          {% if f.estado != "PRESENTE" %}<button name="estado" value="PRESENTE" class="btn btn-sm btn-outline-success">Presente</button>{% endif %}
+          {% if f.estado != "FALTA" %}<button name="estado" value="FALTA" class="btn btn-sm btn-outline-danger">Falta</button>{% endif %}
+        </form>
+      </td>
+    </tr>
+  {% empty %}<tr><td colspan="5" class="text-center text-secondary py-4">No hay registros con esos filtros.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% include "_paginacion.html" %}
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Actividades{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Historial de actividades <span class="text-secondary fs-6">· {{ modulo.nombre }}</span></h1>
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-5"><input class="form-control" name="q" value="{{ q }}" placeholder="Estudiante o usuario"></div>
+  <div class="col-md-3"><input type="date" class="form-control" name="fecha" value="{{ fecha }}"></div>
+  <div class="col-auto"><button class="btn btn-primary">Filtrar</button> <a class="btn btn-link" href="{% url 'actividades' %}">Limpiar</a></div>
+</form>
+<div class="panel table-responsive"><table class="table mb-0">
+  <thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Acción</th><th>Registro afectado</th><th>Cambio</th></tr></thead>
+  <tbody>{% for a in page %}
+    <tr>
+      <td class="text-nowrap">{{ a.fecha_hora|date:"d/m/Y H:i:s" }}</td>
+      <td>{{ a.usuario }}<div class="small text-secondary">{{ a.rol }}</div></td>
+      <td>{{ a.accion }}</td><td>{{ a.registro_afectado|default:"—" }}</td>
+      <td class="text-nowrap">{% if a.valor_anterior %}{{ a.valor_anterior }} → {{ a.valor_nuevo }}{% elif a.valor_nuevo %}{{ a.valor_nuevo }}{% else %}—{% endif %}</td>
+    </tr>
+  {% empty %}<tr><td colspan="5" class="text-center text-secondary py-4">No hay actividades con esos filtros.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% include "_paginacion.html" %}
+{% endblock %}

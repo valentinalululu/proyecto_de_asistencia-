@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Mi asistencia{% endblock %}
+{% block nav %}
+<header class="topbar"><div class="container d-flex align-items-center justify-content-between py-2" style="max-width:1080px">
+  <span class="brand">Control de asistencia</span>
+  <form method="post" action="{% url 'salir' %}">{% csrf_token %}
+    <span class="text-white-50 me-3 small d-none d-sm-inline">{{ est.nombre }}</span>
+    <button class="btn btn-sm btn-outline-light">Cerrar sesión</button></form>
+</div></header>
+{% endblock %}
+{% block content %}
+<div class="panel p-4 mb-4">
+  <div class="row align-items-center g-3">
+    <div class="col-md-7">
+      <h1 class="h3 mb-1">Hola, {{ est.nombre }}</h1>
+      <p class="text-secondary mb-0">Registro {{ est.nro_registro }} · {{ est.modulo.nombre }}</p>
+      <p class="mb-0 mt-2">
+        {% if clase_hoy %}Hoy hay clase de {{ clase_hoy.fecha.hora_inicio|time:"H:i" }} a {{ clase_hoy.fecha.hora_fin|time:"H:i" }}.
+        {% else %}Hoy no hay clase programada.{% endif %}
+      </p>
+    </div>
+    <div class="col-md-5 text-md-end">
+      <form method="post" action="{% url 'marcar' %}">{% csrf_token %}
+        {% if puede_marcar %}
+          <button class="btn btn-primary btn-mark"><i class="bi bi-check2-circle me-2"></i>Marcar asistencia</button>
+        {% else %}
+          <button class="btn btn-secondary btn-mark" disabled>
+            {% if clase_hoy %}Asistencia ya definida{% else %}Sin clase hoy{% endif %}</button>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6"><div class="panel p-3"><div class="stat text-success">{{ presentes }}</div><div class="text-secondary">Asistencias</div></div></div>
+  <div class="col-6"><div class="panel p-3"><div class="stat" style="color:var(--bad)">{{ faltas }}</div><div class="text-secondary">Faltas</div></div></div>
+</div>
+
+<h2 class="h5 mb-3">Mi historial</h2>
+<div class="panel table-responsive">
+  <table class="table mb-0 align-middle">
+    <thead><tr><th>Fecha</th><th>Horario</th><th>Estado</th><th>Hora de la marca</th></tr></thead>
+    <tbody>
+    {% for f in filas %}
+      <tr class="{% if f.es_hoy %}hoy{% endif %}">
+        <td>{{ f.fecha.fecha|date:"D d/m/Y" }}{% if f.es_hoy %} <span class="small text-secondary">(hoy)</span>{% endif %}</td>
+        <td>{{ f.fecha.hora_inicio|time:"H:i" }} – {{ f.fecha.hora_fin|time:"H:i" }}</td>
+        <td>{% include "_estado.html" with estado=f.estado %}</td>
+        <td>{% if f.hora_marca %}{{ f.hora_marca|time:"H:i:s" }}{% elif f.corregido %}<span class="small text-secondary">Corregido por administración</span>{% else %}—{% endif %}</td>
+      </tr>
+    {% empty %}<tr><td colspan="4" class="text-center text-secondary py-4">No hay fechas de clase cargadas.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

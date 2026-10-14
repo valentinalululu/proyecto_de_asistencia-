@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block nav %}
+{% with n=request.resolver_match.url_name %}
+<header class="topbar"><div class="container d-flex flex-wrap align-items-center justify-content-between py-2 gap-2" style="max-width:1080px">
+  <span class="brand">Control de asistencia <span class="fw-normal text-white-50">· Administración</span></span>
+  <nav class="nav">
+    <a class="nav-link {% if n == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">Resumen</a>
+    <a class="nav-link {% if n == 'estudiantes' %}active{% endif %}" href="{% url 'estudiantes' %}">Estudiantes</a>
+    <a class="nav-link {% if n == 'asistencias' %}active{% endif %}" href="{% url 'asistencias' %}">Asistencias</a>
+    <a class="nav-link {% if n == 'actividades' %}active{% endif %}" href="{% url 'actividades' %}">Actividades</a>
+    <a class="nav-link {% if n == 'modulos' %}active{% endif %}" href="{% url 'modulos' %}">Módulos</a>
+    <a class="nav-link {% if n == 'modulo_importar' %}active{% endif %}" href="{% url 'modulo_importar' %}">Nuevo módulo</a>
+  </nav>
+  <form method="post" action="{% url 'salir' %}">{% csrf_token %}
+    <button class="btn btn-sm btn-outline-light">Cerrar sesión</button></form>
+</div></header>
+{% endwith %}
+{% endblock %}

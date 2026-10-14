@@ -1,0 +1,36 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Módulos{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-end mb-3 gap-2">
+  <div><h1 class="h3 mb-1">Módulos</h1>
+  <p class="text-secondary mb-0">Solo un módulo puede estar habilitado a la vez. Habilitar y deshabilitar no borra datos; Eliminar sí, y es definitivo.</p></div>
+  <a class="btn btn-primary" href="{% url 'modulo_importar' %}">Importar un nuevo módulo</a>
+</div>
+
+<div class="panel table-responsive"><table class="table mb-0 align-middle">
+  <thead><tr><th>Módulo</th><th>Creado</th><th>Estudiantes</th><th>Fechas</th><th>Marcas</th><th>Estado</th><th class="text-end">Acción</th></tr></thead>
+  <tbody>{% for m in lista %}
+    <tr {% if m.activo %}class="hoy"{% endif %}>
+      <td class="fw-semibold">{{ m.nombre }}</td>
+      <td class="text-nowrap">{{ m.creado_en|date:"d/m/Y" }}</td>
+      <td>{{ m.n_estudiantes }}</td><td>{{ m.n_fechas }}</td><td>{{ m.n_asistencias }}</td>
+      <td>{% if m.activo %}<span class="badge-estado e-PRESENTE">Habilitado</span>{% else %}<span class="badge-estado e-PROGRAMADA">Deshabilitado</span>{% endif %}</td>
+      <td class="text-end">
+        {% if m.activo %}
+          <form method="post" action="{% url 'modulo_deshabilitar' m.id %}" class="d-inline"
+                onsubmit="return confirm('Se deshabilitará «{{ m.nombre|escapejs }}». Ningún estudiante podrá ingresar hasta habilitar un módulo. Los datos se conservan. ¿Continuar?');">
+            {% csrf_token %}<button class="btn btn-sm btn-outline-danger">Deshabilitar</button></form>
+        {% else %}
+          <form method="post" action="{% url 'modulo_habilitar' m.id %}" class="d-inline"
+                onsubmit="return confirm('Se habilitará «{{ m.nombre|escapejs }}». El módulo activo actual quedará deshabilitado. ¿Continuar?');">
+            {% csrf_token %}<button class="btn btn-sm btn-outline-success">Habilitar</button></form>
+          <form method="post" action="{% url 'modulo_eliminar' m.id %}" class="d-inline"
+                onsubmit="var t = prompt('ELIMINAR DEFINITIVAMENTE. Se borrarán estudiantes, fechas, asistencias y actividades de este módulo. No se puede deshacer.\n\nEscribe el nombre exacto para confirmar:\n{{ m.nombre|escapejs }}'); if (t === null) { return false; } this.confirmacion.value = t; return true;">
+            {% csrf_token %}<input type="hidden" name="confirmacion">
+            <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Eliminar</button></form>
+        {% endif %}
+      </td>
+    </tr>
+  {% empty %}<tr><td colspan="7" class="text-center text-secondary py-4">Aún no hay módulos. Importa estudiantes y fechas para crear el primero.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}
